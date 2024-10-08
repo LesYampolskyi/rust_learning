@@ -1,29 +1,73 @@
-use rand::Rng;
-use std::cmp::Ordering;
-use std::io;
 fn main() {
-    println!("Games: ");
+    let s = String::from("Hello world");
 
-    let secret_number = rand::thread_rng().gen_range(1..=10);
-    println!("The secret number is: {}", secret_number);
-    loop {
-        let mut line = String::new();
-        println!("Input your guess: ");
-        io::stdin().read_line(&mut line).expect("Fail");
-        print!("Your inputs is: {}", line);
+    let word = first_word(&s);
+    println!("{}", word);
 
-        let line: u32 = match line.trim().parse(){
-            Ok(num) => num,
-            Err(_) => continue,
-        };
+    let hello = &s[0..5];
+    let world = &s[6..];
+    println!("Slice one: {}", hello);
+    println!("Slice two: {}", world);
 
-        match line.cmp(&secret_number) {
-            Ordering::Greater => println!("Too big"),
-            Ordering::Less => println!("Too small"),
-            Ordering::Equal => {
-                println!("You win!");
-                break;
-            }
+    let slice_string = first_word_slice(&s);
+
+    println!("Slice is: {}", slice_string);
+
+    println!("{word}");
+    println!("Slice is: {}", slice_string);
+
+    let a = first_word_for_slice(&s);
+    let b = first_word_for_slice(&s[..]);
+    let c = first_word_for_slice(&s[0..5]);
+    // let c = first_word_for_slice(s); === Error
+
+    println!("for slice: {}, {}, {}", a, b, c);
+
+    let string_literal = "hello world";
+    let d = first_word_for_slice(string_literal);
+    let e = first_word_for_slice(&string_literal);
+
+    println!("string literal: {}, {}", d, e);
+
+    let a = [1, 2, 3, 4, 5];
+
+    let slice = &a[1..3];
+
+    assert_eq!(slice, &[2, 3]);
+}
+
+fn first_word_for_slice(s: &str) -> &str {
+    let bytes = s.as_bytes();
+
+    for (i, &item) in bytes.iter().enumerate() {
+        if item == b' ' {
+            return &s[0..i];
         }
     }
+
+    &s
+}
+
+fn first_word_slice(s: &String) -> &str {
+    let bytes = s.as_bytes();
+
+    for (i, &item) in bytes.iter().enumerate() {
+        if item == b' ' {
+            return &s[0..i];
+        }
+    }
+
+    &s[..]
+}
+
+fn first_word(s: &String) -> usize {
+    let bytes = s.as_bytes();
+
+    for (i, &item) in bytes.iter().enumerate() {
+        if item == b' ' {
+            return i;
+        }
+    }
+
+    s.len()
 }
