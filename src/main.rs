@@ -1,73 +1,103 @@
 fn main() {
-    let s = String::from("Hello world");
+    let mut user1 = User {
+        active: true,
+        username: String::from("John Smith"),
+        email: String::from("john@mail.com"),
+        sign_in_count: 12,
+    };
 
-    let word = first_word(&s);
-    println!("{}", word);
+    println!("User1 name is: {}", user1.username);
+    user1.username = String::from("Kate");
+    println!("User1 mutated name is: {}", user1.username);
 
-    let hello = &s[0..5];
-    let world = &s[6..];
-    println!("Slice one: {}", hello);
-    println!("Slice two: {}", world);
+    let user2 = build_user(String::from("user2"), String::from("user2@mail.com"));
+    println!("User2 is: {} with email: {}", user2.username, user2.email);
 
-    let slice_string = first_word_slice(&s);
+    let black = Color(0, 0, 0);
+    let start_point = Point(0, 0, 0);
 
-    println!("Slice is: {}", slice_string);
+    let subject = AlwaysEqual;
 
-    println!("{word}");
-    println!("Slice is: {}", slice_string);
+    let dimension = (10, 14);
+    let area_one = area_tuple(dimension);
+    println!("Area one is: {}", area_one);
+    println!("Dimension is {} width and {} height", dimension.0, dimension.1);
 
-    let a = first_word_for_slice(&s);
-    let b = first_word_for_slice(&s[..]);
-    let c = first_word_for_slice(&s[0..5]);
-    // let c = first_word_for_slice(s); === Error
+    let rect = Rectangle {
+        width: 10,
+        height: 3,
+    };
 
-    println!("for slice: {}, {}, {}", a, b, c);
+    println!("New are is: {} pixels", area_struct(&rect));
+    println!("Rectangle info: {rect:?}");
+    println!("Rectangle info: {rect:#?}");
+    dbg!(&rect);
 
-    let string_literal = "hello world";
-    let d = first_word_for_slice(string_literal);
-    let e = first_word_for_slice(&string_literal);
+    println!("Area impl is: {}", rect.area());
+    let rect2 = Rectangle {
+        width: 7,
+        height: 4,
+    };
+    println!("Can hold: {}", rect.can_hold(&rect2));
 
-    println!("string literal: {}, {}", d, e);
-
-    let a = [1, 2, 3, 4, 5];
-
-    let slice = &a[1..3];
-
-    assert_eq!(slice, &[2, 3]);
+    let square = Rectangle::square(14);
+    println!("Square is: {square:#?}")
 }
 
-fn first_word_for_slice(s: &str) -> &str {
-    let bytes = s.as_bytes();
+#[derive(Debug)]
+struct Rectangle {
+    width: u32,
+    height: u32,
+}
 
-    for (i, &item) in bytes.iter().enumerate() {
-        if item == b' ' {
-            return &s[0..i];
+impl Rectangle {
+    fn area(&self) -> u32 {
+        self.width * self.height
+    }
+
+    fn can_hold(&self, other: &Rectangle) -> bool {
+        self.width > other.width && self.height > other.height
+    }
+
+    fn square(side: u32) -> Self {
+        Self {
+            width: side,
+            height: side,
         }
     }
 
-    &s
+   
 }
 
-fn first_word_slice(s: &String) -> &str {
-    let bytes = s.as_bytes();
-
-    for (i, &item) in bytes.iter().enumerate() {
-        if item == b' ' {
-            return &s[0..i];
-        }
-    }
-
-    &s[..]
+fn area_struct(rect: &Rectangle) -> u32 {
+    rect.width * rect.height
+}
+ 
+fn area(width: u32, height: u32) -> u32 {
+    width * height
 }
 
-fn first_word(s: &String) -> usize {
-    let bytes = s.as_bytes();
+fn area_tuple(dimension: (u32, u32)) -> u32 {
+    dimension.0 * dimension.1
+}
 
-    for (i, &item) in bytes.iter().enumerate() {
-        if item == b' ' {
-            return i;
-        }
+fn build_user(username: String, email: String) -> User {
+    User {
+        active: true,
+        username,
+        email,
+        sign_in_count: 1,
     }
+}
 
-    s.len()
+struct AlwaysEqual;
+
+struct Color (i32, i32, i32);
+struct Point (i32, i32, i32);
+
+struct User {
+    active: bool,
+    username: String,
+    email: String,
+    sign_in_count: u64,
 }
