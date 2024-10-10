@@ -1,103 +1,107 @@
+// Patterns That Bind to Values
+
 fn main() {
-    let mut user1 = User {
-        active: true,
-        username: String::from("John Smith"),
-        email: String::from("john@mail.com"),
-        sign_in_count: 12,
-    };
+    // let four = IpAddrKind::V4;
+    // let six = IpAddrKind::V6;
 
-    println!("User1 name is: {}", user1.username);
-    user1.username = String::from("Kate");
-    println!("User1 mutated name is: {}", user1.username);
+    // let home = IpAddr {
+    //     kind: IpAddrKind::V4,
+    //     address: String::from("127.0.0.1"),
+    // };
 
-    let user2 = build_user(String::from("user2"), String::from("user2@mail.com"));
-    println!("User2 is: {} with email: {}", user2.username, user2.email);
+    // let loopack = IpAddr {
+    //     kind: IpAddrKind::V6,
+    //     address: String::from("::1"),
+    // };
 
-    let black = Color(0, 0, 0);
-    let start_point = Point(0, 0, 0);
+    // let home_adv = IpAddrAdv::V4(123, 1, 2, 3);
+    // let loopack_adv = IpAddrAdv::V6(String::from("::1"));
 
-    let subject = AlwaysEqual;
+    // let m = Message::Write(String::from("hello"));
+    // m.call();
 
-    let dimension = (10, 14);
-    let area_one = area_tuple(dimension);
-    println!("Area one is: {}", area_one);
-    println!("Dimension is {} width and {} height", dimension.0, dimension.1);
+    // let some_number = Some(5);
+    // let some_char = Some('a');
 
-    let rect = Rectangle {
-        width: 10,
-        height: 3,
-    };
+    // let absent_number: Option<u8> = None;
+    // let coin = Coin::Nickel;
+    // let coin_alaska = CoinAdv::Quarter(UsState::Alaska);
+    // values_in_coin(coin_alaska);
 
-    println!("New are is: {} pixels", area_struct(&rect));
-    println!("Rectangle info: {rect:?}");
-    println!("Rectangle info: {rect:#?}");
-    dbg!(&rect);
+    let config_max = Some(2u8);
+    match  config_max {
+        Some(max) => println!("The maximum is configured to be {max}"),
+        _ => (),
+    }
 
-    println!("Area impl is: {}", rect.area());
-    let rect2 = Rectangle {
-        width: 7,
-        height: 4,
-    };
-    println!("Can hold: {}", rect.can_hold(&rect2));
 
-    let square = Rectangle::square(14);
-    println!("Square is: {square:#?}")
+}
+
+fn values_in_coin(coin: CoinAdv) -> u8 {
+    match coin {
+        CoinAdv::Penny => 1,
+        CoinAdv::Nickel => 5,
+        CoinAdv::Dime => 10,
+        CoinAdv::Quarter(us_state) => {
+            println!("State:: {us_state:?}");
+            25
+        },
+    }
 }
 
 #[derive(Debug)]
-struct Rectangle {
-    width: u32,
-    height: u32,
+enum UsState {
+    Alabama,
+    Alaska,
 }
 
-impl Rectangle {
-    fn area(&self) -> u32 {
-        self.width * self.height
-    }
-
-    fn can_hold(&self, other: &Rectangle) -> bool {
-        self.width > other.width && self.height > other.height
-    }
-
-    fn square(side: u32) -> Self {
-        Self {
-            width: side,
-            height: side,
-        }
-    }
-
-   
+enum CoinAdv {
+    Penny,
+    Nickel,
+    Dime,
+    Quarter(UsState),
 }
 
-fn area_struct(rect: &Rectangle) -> u32 {
-    rect.width * rect.height
-}
- 
-fn area(width: u32, height: u32) -> u32 {
-    width * height
-}
-
-fn area_tuple(dimension: (u32, u32)) -> u32 {
-    dimension.0 * dimension.1
+enum Coin {
+    Penny,
+    Nickel,
+    Dime,
+    Quarter,
 }
 
-fn build_user(username: String, email: String) -> User {
-    User {
-        active: true,
-        username,
-        email,
-        sign_in_count: 1,
+fn value_in_cents(coin: Coin) -> u8 {
+    match coin {
+        Coin::Penny => 1,
+        Coin::Nickel => 5,
+        Coin::Dime => 10,
+        Coin::Quarter => 25,
     }
 }
 
-struct AlwaysEqual;
+enum Message {
+    Quit,
+    Write(String),
+    Move { x: u32, y: u32 },
+    ChangeColor(i32, i32, i32),
+}
 
-struct Color (i32, i32, i32);
-struct Point (i32, i32, i32);
+impl Message {
+    fn call(&self) {
+        //
+    }
+}
 
-struct User {
-    active: bool,
-    username: String,
-    email: String,
-    sign_in_count: u64,
+enum IpAddrAdv {
+    V4(u8, u8, u8, u8),
+    V6(String),
+}
+
+enum IpAddrKind {
+    V4,
+    V6,
+}
+
+struct IpAddr {
+    kind: IpAddrKind,
+    address: String,
 }
