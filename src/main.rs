@@ -1,18 +1,46 @@
-use chrono::prelude::*;
-fn main() {
-    let now_time = Local::now();
-    println!("Time now is: {}", now_time);
-    let start_point = Local.with_ymd_and_hms(2024, 10, 10, 12, 27, 0).unwrap();
+use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
 
-    let diff = now_time.signed_duration_since(start_point);
+#[get("/")]
+async fn hello() -> impl Responder {
+    HttpResponse::Ok().body("Hello world!")
+}
 
-    let days = diff.num_days();
-    let hours = diff.num_hours();
-    let minutes = diff.num_minutes();
+#[get("/custom")]
+async fn get_data() -> impl Responder {
+    HttpResponse::Ok().body("And this is custom")
+}
 
-    println!("Start time: {}", start_point);
-    println!("Now: {}", now_time);
-    println!("Days: {days}");
-    println!("Hours: {hours}, Total hours: {}", hours % 24);
-    println!("Minutes: {}, Total minutes: {}", minutes % 60, minutes);
+#[get("/custom")]
+async fn custom_request() -> impl Responder {
+    HttpResponse::Ok().body("Hello, my friend!")
+}
+
+#[post("/echo")] // POST _ NOT GET
+async fn echo(req_body: String) -> impl Responder {
+    HttpResponse::Ok().body(req_body)
+}
+
+async fn manual_hello() -> impl Responder {
+    HttpResponse::Ok().body("Hey there!")
+}
+
+async fn another_request() -> impl Responder {
+    HttpResponse::Ok().body("123- hello --- ")
+}
+
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    HttpServer::new(|| {
+        App::new()
+            .service(hello)
+            .service(echo)
+            .service(get_data)
+            .service(custom_request)
+            .route("/hey", web::get().to(manual_hello))
+            // .route("/hi", web::get().to(custom_request))
+            .route("/hi", web::get().to(another_request))
+    })
+    .bind(("127.0.0.1", 8080))?
+    .run()
+    .await
 }
