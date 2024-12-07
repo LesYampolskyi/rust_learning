@@ -1,46 +1,47 @@
-use csv::{self, Reader};
-use std::{path::Path, result};
+use itertools::Itertools;
 
 fn main() {
-    let file_name = "file_test.csv";
-    let result = Reader::from_path(file_name);
+    println!("Hello world");
+    let values: Vec<u8> = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    let result = values
+        .windows(4)
+        .find(|window| window == &[1, 2, 3, 4])
+        .is_some();
 
-    if result.is_err() {
-        println!("Failed to read a csv file. Some error, lilbro");
-        std::process::exit(9);
-    }
-
-    println!("After error handling");
-
-    let mut my_reader =  result.unwrap();
-
-    for record in my_reader.records() {
-        println!("====++++: {:?}", record);
-        println!("====++++: {}", record.unwrap().get(0).unwrap());
-    }
+    // dbg!(result)
+    println!("Result:: {}", result);
+    println!("Done");
 
 
-    // println!("Here we are!");
+    let i = vec![1,2,3,4,5,6,7,8,9,10,11,12,13];
+    let i_slice = &i[..];
+    let i_result = i_slice.has_prefix_custom(&[9,10,11]);
+    println!("has_prefix_custom:: {}", i_result);
+    println!("+++");
 
-    // if let Err(e) = read_csv(String::from("file_test.csv")) {
-    //     eprintln!("Error, lilbro: {}", e);
-    // };
+    let s = vec!["Hello", "World", "some", "Stuff"];
+    let s_result = s.as_slice().has_prefix_custom(&["World", "some"]);
+    println!("string has_prefix_custom:: {}", s_result);
+    println!("+++");
 }
 
-fn read_csv(filename: String) -> Result<(), csv::Error> {
-    let path = Path::new(&filename);
+trait Prefix<T> {
+    fn has_prefix_custom(&self, prefix: &[T]) -> bool;
+}
 
-    if path.exists() {
-        println!("From read_csv() function...");
-        let mut rcsv = csv::Reader::from_path(path)?;
-
-        for result in rcsv.records() {
-            let record = result?;
-            println!("Result ===> {:?} ", record)
-        }
-    } else {
-        println!("File not exists");
+impl<T> Prefix<T> for &[T]
+where
+    T: PartialEq,
+{
+    fn has_prefix_custom(&self, prefix: &[T]) -> bool {
+        self.iter()
+            // .positions(predicate)
+            // .pos
+            .positions(|v| *v == prefix[0])
+            .find(|&index| {
+                let range = index..(index + prefix.len());
+                self[range] == *prefix
+            })
+            .is_some()
     }
-
-    Ok(())
 }
